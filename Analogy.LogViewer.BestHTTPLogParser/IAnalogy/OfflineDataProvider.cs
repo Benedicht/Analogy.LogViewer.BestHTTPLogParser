@@ -17,6 +17,27 @@ namespace Analogy.LogViewer.BestHTTPLogParser.IAnalogy
         public override string? InitialFolderFullPath { get; set; } = Environment.CurrentDirectory;
         public override Guid Id { get; set; } = new Guid("8a235ab7-c918-46a8-8a08-2d93b1c1b313");
 
+        public override IEnumerable<AnalogyLogMessagePropertyName> HideExistingColumns()
+        {
+            return new AnalogyLogMessagePropertyName[]
+            {
+                AnalogyLogMessagePropertyName.Class,
+                AnalogyLogMessagePropertyName.User,
+                AnalogyLogMessagePropertyName.Source,
+                AnalogyLogMessagePropertyName.RawText,
+                AnalogyLogMessagePropertyName.RawTextType,
+                AnalogyLogMessagePropertyName.FileName,
+                AnalogyLogMessagePropertyName.LineNumber,
+                AnalogyLogMessagePropertyName.MachineName,
+                AnalogyLogMessagePropertyName.ProcessId
+            };
+        }
+
+        public override IEnumerable<string> HideAdditionalColumns()
+        {
+            return new string[] { "User", "Source" };
+        }
+
         public override async Task<IEnumerable<IAnalogyLogMessage>> Process(string fileName, CancellationToken token, ILogMessageCreatedHandler messagesHandler)
         {
             var result = new List<IAnalogyLogMessage>();
