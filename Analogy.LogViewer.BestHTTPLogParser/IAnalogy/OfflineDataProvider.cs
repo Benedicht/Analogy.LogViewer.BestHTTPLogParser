@@ -43,15 +43,16 @@ namespace Analogy.LogViewer.BestHTTPLogParser.IAnalogy
             var result = new List<IAnalogyLogMessage>();
 
             //var lines = await File.ReadAllLinesAsync(fileName, token);
+            
+            int processedEntries = 0;
+            int processedLines = 0;
+
+            string? line = null;
 
             try
             {
                 using var source = File.OpenText(fileName);
 
-                int processedEntries = 0;
-                int processedLines = 0;
-
-                string? line = null;
                 while ((line = await source.ReadLineAsync()) != null)
                 {
                     line = line.Replace("<b><color=yellow>", "")
@@ -65,7 +66,7 @@ namespace Analogy.LogViewer.BestHTTPLogParser.IAnalogy
                     catch
                     { }
 
-                    if (entry != null)
+                    if (entry != null && entry.bh > 0)
                     {
                         entry.FullTime = DateTime.FromBinary(entry.t);
 
@@ -139,7 +140,7 @@ namespace Analogy.LogViewer.BestHTTPLogParser.IAnalogy
             "Warning" => AnalogyLogLevel.Warning,
             "Error" => AnalogyLogLevel.Error,
             "Exception" => AnalogyLogLevel.Critical,
-            _ => throw new NotImplementedException($"Unknown log level: {this.ll}")
+            _ => throw new NotImplementedException($"Unknown log level: '{this.ll}'")
         };
 
         public void AddContextsTo(AnalogyLogMessage msg)
