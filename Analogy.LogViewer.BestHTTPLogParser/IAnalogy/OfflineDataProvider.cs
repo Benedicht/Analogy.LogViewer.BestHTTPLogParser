@@ -57,6 +57,11 @@ namespace Analogy.LogViewer.BestHTTPLogParser.IAnalogy
                 {
                     line = line.Replace("<b><color=yellow>", "")
                            .Replace("</color></b>", "");
+
+                    int jsonStartIdx = line.IndexOf("{");
+                    if (jsonStartIdx > 0)
+                        line = line.Remove(0, jsonStartIdx);
+
                     LogEntry? entry = null;
                     try
                     {
