@@ -1,5 +1,6 @@
 ﻿using Analogy.Interfaces;
 using Analogy.Interfaces.DataTypes;
+using Analogy.LogViewer.Template.Properties;
 
 using Newtonsoft.Json.Linq;
 
@@ -11,6 +12,7 @@ namespace Analogy.LogViewer.BestHTTPLogParser.IAnalogy
     {
         public override Image? SmallImage { get; set; } = null;
         public override Image? LargeImage { get; set; } = null;
+
         public override string? OptionalTitle { get; set; } = "Best HTTP Log Parser";
         public override string FileOpenDialogFilters { get; set; } = "JSon files(*.json)|*.json|txt files (*.txt)|*.txt|All files (*.*)|*.*";
         public override IEnumerable<string> SupportFormats { get; set; } = new List<string> { "*.txt", "*.json", "*" };
@@ -48,10 +50,13 @@ namespace Analogy.LogViewer.BestHTTPLogParser.IAnalogy
             int processedLines = 0;
 
             string? line = null;
+            DateTime start = DateTime.Now;
 
             try
             {
                 using var source = File.OpenText(fileName);
+
+                RaiseProcessingStarted(new AnalogyStartedProcessingArgs(start, string.Empty));
 
                 while ((line = await source.ReadLineAsync()) != null)
                 {
@@ -102,12 +107,14 @@ namespace Analogy.LogViewer.BestHTTPLogParser.IAnalogy
 
                 string file = Path.GetFileName(fileName);
 
-                messagesHandler.AppendMessage(exceptionLogEntry, fileName.Equals(file) ? fileName : $"{file} ({fileName})");
                 result.Insert(0, exceptionLogEntry);
             }
+            finally
+            {
+                messagesHandler.AppendMessages(result, fileName);
 
-            messagesHandler.AppendMessages(result, fileName);
-
+                RaiseProcessingFinished(new AnalogyEndProcessingArgs(start, DateTime.Now));
+            }
             return result;
         }
     }
