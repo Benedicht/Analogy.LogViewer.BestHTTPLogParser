@@ -117,6 +117,11 @@ namespace Analogy.LogViewer.BestHTTPLogParser.IAnalogy
             }
             return result;
         }
+
+        protected override List<FileInfo> GetSupportedFilesInternal(DirectoryInfo dirInfo, bool recursive)
+        {
+            return new List<FileInfo>(0);
+        }
     }
 
     public sealed class LogContext
