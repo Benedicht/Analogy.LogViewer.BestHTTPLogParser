@@ -54,7 +54,7 @@ namespace Analogy.LogViewer.BestHTTPLogParser.IAnalogy
 
             try
             {
-                using var source = File.OpenText(fileName);
+                using var source = new StreamReader(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
 
                 RaiseProcessingStarted(new AnalogyStartedProcessingArgs(start, string.Empty));
 
