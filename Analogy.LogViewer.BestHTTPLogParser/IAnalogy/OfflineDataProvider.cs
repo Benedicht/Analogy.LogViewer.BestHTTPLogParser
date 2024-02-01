@@ -143,7 +143,7 @@ namespace Analogy.LogViewer.BestHTTPLogParser.IAnalogy
         public string? div;
         public string? msg;
         public string? stack;
-        public List<LogContext>? ctx;
+        public List<Dictionary<string, object>>? ctx;
         public List<ExceptionInfo>? ex;
         public long t;
         public string? ll;
@@ -163,12 +163,26 @@ namespace Analogy.LogViewer.BestHTTPLogParser.IAnalogy
         public void AddContextsTo(AnalogyLogMessage msg)
         {
             if (ctx != null)
+                for (int i = 0; i < ctx.Count; i++) 
+                    AddProperties(msg, i.ToString(), ctx[i]);
+        }
+
+        public void AddProperties(AnalogyLogMessage msg, string prefix, Dictionary<string, object> properties)
+        {
+            foreach (var prop in properties)
             {
-                foreach (var item in ctx)
-                {
-                    if (item.TypeName != null && item.Hash != null)
-                        msg.AddOrReplaceAdditionalProperty(item.TypeName, item.Hash);
-                }
+                string key = string.IsNullOrEmpty(prefix) ? prop.Key : $"{prefix}.{prop.Key}";
+
+                if (prop.Value is string str)
+                    msg.AddOrReplaceAdditionalProperty(key, str);
+                else if (prop.Value is Dictionary<string, object> subProp)
+                    AddProperties(msg, key, subProp);
+                else if (prop.Value is int intVal)
+                    msg.AddOrReplaceAdditionalProperty(key, intVal.ToString());
+                else if (prop.Value is long longVal)
+                    msg.AddOrReplaceAdditionalProperty(key, longVal.ToString());
+                else if (prop.Value is bool boolVal)
+                    msg.AddOrReplaceAdditionalProperty(key, boolVal.ToString());
             }
         }
     }
